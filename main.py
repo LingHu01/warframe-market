@@ -1,5 +1,6 @@
 import requests
 import json
+import numpy as np
 
 class CheckVitus:
     def __init__(self):
@@ -12,9 +13,8 @@ class CheckVitus:
         for name, value in self.vitus_dct.items():
             self.get_data(name)
             self.slice(value)
-            with open(f'test_{name}.json', 'w') as f:
-                json.dump(self.item_list, f)
-                self.item_list = None
+            self.elaborate_data(value)
+            self.item_list = None
 
     def load(self):  # open js file
         with open('vitus_mod.json', 'r') as fp:
@@ -36,10 +36,15 @@ class CheckVitus:
                 if dct['platinum'] < plat:
                     return
                 elif dct['platinum'] != last:
-                    self.item_list = self.item_list[:i]
+                    self.item_list = self.item_list[:i-1]
                     return
             last = dct['platinum']
 
+    def elaborate_data(self, value):
+        platinum = np.array([dct.get('platinum') for dct in self.item_list])
+        quantity = np.array([dct.get('quantity') for dct in self.item_list])
+        average = sum(platinum * quantity) / len(quantity)
+        print(average)
 
 
 
