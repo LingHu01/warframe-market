@@ -6,6 +6,7 @@ class CheckVitus:
     def __init__(self):
         self.vitus_dct = None
         self.item_list = None
+        self.exchange_rate = None
         self.process()
 
     def process(self):  # main
@@ -13,20 +14,22 @@ class CheckVitus:
         for name, value in self.vitus_dct.items():
             self.get_data(name)
             self.slice(value)
-            self.elaborate_data(value)
+            self.calc_exchange(value)
             self.item_list = None
 
     def load(self):  # open js file
         with open('vitus_mod.json', 'r') as fp:
             self.vitus_dct = json.load(fp)
 
-    def get_data(self, name):  # get item list from wf.market and filter rank and offline player
-        def filter_dict(dictionary, key, value):
-            return True if dictionary[key] == value else False
+    @staticmethod
+    def filter_dict(dictionary, key, value):
+        return True if dictionary[key] == value else False
 
+    def get_data(self, name):  # get item list from wf.market and filter rank and offline player
         item = requests.get(f"https://api.warframe.market/v1/items/{name}/orders")
         lst = [x for x in item.json()["payload"]["orders"] if x["order_type"] == 'sell']
-        lst = [x for x in lst if filter_dict(x['user'], 'status', 'ingame')]
+        lst = [x for x in lst if self.filter_dict(x, 'mod_rank', 0)]
+        lst = [x for x in lst if self.filter_dict(x['user'], 'status', 'ingame')]
         self.item_list = sorted(lst, key=lambda k: k['platinum'])
 
     def slice(self, value):
@@ -40,12 +43,11 @@ class CheckVitus:
                     return
             last = dct['platinum']
 
-    def elaborate_data(self, value):
-        platinum = np.array([dct.get('platinum') for dct in self.item_list])
-        quantity = np.array([dct.get('quantity') for dct in self.item_list])
-        average = sum(platinum * quantity) / len(quantity)
-        print(average)
-
+    def calc_exchange(self, value):
+        platinum = np.array([dct.get('platinum') for dct in self.item_list if self.filter_dict(dct, 'mod_rank', 0)])
+        quantity = np.array([dct.get('quantity') for dct in self.item_list if self.filter_dict(dct, 'mod_rank', 0)])
+        average = sum(platinum * quantity) / sum(quantity)
+        self.exchange_rate = average / value
 
 
 def main():
