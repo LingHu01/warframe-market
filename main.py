@@ -10,12 +10,12 @@ class CheckVitus:
         self.item_list = None       # one item full API response
         self.p_below_ex = None      # people selling below exchange rate
         self.exchange_rate = None   # vitus/plat exchange
-        print('processing...')
         self.process_data()
         self.print_out()
 
     # main
     def process_data(self):
+        print('processing...')
         self.load()
         for name, value in self.vitus_dct.items():
             self.get_data(name)
