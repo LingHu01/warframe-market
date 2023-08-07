@@ -99,7 +99,7 @@ class CheckVitus:
         )
 
     def print_out(self):
-        for dct in self.all_items:
+        for dct in sorted(self.all_items, key=lambda y: list(y.keys())[0], reverse=True):
             key, info = dct.items().__iter__().__next__()
             print(
                 f"{info['name']:25s}    "
