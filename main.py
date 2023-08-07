@@ -105,6 +105,7 @@ class CheckVitus:
                 f"average: {key:4.2f} plat/vitus\n"
                 f"{info['below_cost']} are sold by {info['p_below_cost']} person below the average"
             )
+            print('-' * 80)
             for x in info['list']:
                 print(f"num: {x['quantity']:<4d}     plat: {x['platinum']:3d}        "
                       f"mod rank: {x['mod_rank']:2d}         seller: {x['seller']}")
