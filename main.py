@@ -1,7 +1,6 @@
 import requests
 import json
 import numpy as np
-from icecream import ic
 
 class CheckVitus:
     def __init__(self):
