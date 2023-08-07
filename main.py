@@ -79,10 +79,10 @@ class CheckVitus:
         for price, number in zip(platinum, quantity):
             if price / value < self.exchange_rate:
                 below_cost += number
-                below_cost += 1
+                below_person += 1
             else:
                 self.below_ex = below_cost
-                self.p_below_ex = below_cost
+                self.p_below_ex = below_person
                 return
 
     def result(self, name):
