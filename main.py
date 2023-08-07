@@ -101,13 +101,14 @@ class CheckVitus:
         for dct in sorted(self.all_items, key=lambda y: list(y.keys())[0], reverse=True):
             key, info = dct.items().__iter__().__next__()
             print(
-                f"{info['name']:25s}    "
-                f"{info['below_cost']:5d} are sold by {info['p_below_cost']:3d} person below {key:4.2f} plat/vitus"
+                f"{info['name']:25s}\n"
+                f"average: {key:4.2f} plat/vitus\n"
+                f"{info['below_cost']} are sold by {info['p_below_cost']} person below the average"
             )
             for x in info['list']:
                 print(f"num: {x['quantity']:<4d}     plat: {x['platinum']:3d}        "
                       f"mod rank: {x['mod_rank']:2d}         seller: {x['seller']}")
-            print()
+            print('-'*80)
             print()
 
 
