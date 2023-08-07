@@ -58,12 +58,11 @@ class CheckVitus:
         for i, dct in enumerate(self.item_list):
             if i > 4:
                 if dct['platinum'] < plat:
-                    self.item_list = self.item_list[:i]
-                    return
+                    break
                 elif dct['platinum'] != last:
-                    self.item_list = self.item_list[:i]
-                    return
+                    break
             last = dct['platinum']
+        self.item_list = self.item_list[:i]
 
     def calc(self, value):
         below_cost, below_person = 0, 0
