@@ -22,7 +22,7 @@ class CheckVitus:
             self.refactor()
             self.slice(value)
             self.calc(value)
-            self.result(name)
+            self.result(value, name)
             self.item_list = None
 
     # open js file
@@ -68,7 +68,7 @@ class CheckVitus:
         platinum = np.array([dct.get('platinum') for dct in self.item_list if self.filter_dict(dct, 'mod_rank', 0)])
         quantity = np.array([dct.get('quantity') for dct in self.item_list if self.filter_dict(dct, 'mod_rank', 0)])
         try:
-            average = sum(platinum * quantity) / sum(quantity)
+            average = sum(platinum) / len(quantity)
         except ZeroDivisionError:
             average = 0
         except TypeError:
@@ -84,14 +84,15 @@ class CheckVitus:
                 self.p_below_ex = below_person
                 return
 
-    def result(self, name):
+    def result(self, value, name):
         self.all_items.append(
             {self.exchange_rate:
                 {
                     'name': name,
                     'list': self.item_list,
                     'below_cost': self.below_ex,
-                    'p_below_cost': self.p_below_ex
+                    'p_below_cost': self.p_below_ex,
+                    'vitus': value
                 }
             }
         )
@@ -100,7 +101,7 @@ class CheckVitus:
         for dct in sorted(self.all_items, key=lambda y: list(y.keys())[0], reverse=True):
             key, info = dct.items().__iter__().__next__()
             print(
-                f"{info['name']:25s}\n"
+                f"{info['name']:25s}    {info['vitus']} vitus\n"
                 f"average: {key:4.2f} plat/vitus\n"
                 f"{info['below_cost']} are sold by {info['p_below_cost']} person below the average"
             )
