@@ -20,7 +20,7 @@ class CheckVitus:
         for name, value in self.vitus_dct.items():
             self.get_data(name)
             self.refactor()
-            self.slice(value, name)
+            self.slice(value)
             self.calc(value)
             self.result(name)
             self.item_list = None
@@ -52,7 +52,7 @@ class CheckVitus:
             } for dct in self.item_list
         ]
 
-    def slice(self, value, name):
+    def slice(self, value):
         plat, last = (value * 0.75), 0
         for i, dct in enumerate(self.item_list):
             if i > 4:
