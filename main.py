@@ -1,6 +1,7 @@
 import requests
 import json
 import numpy as np
+from icecream import ic
 
 class CheckVitus:
     def __init__(self):
@@ -20,7 +21,7 @@ class CheckVitus:
         for name, value in self.vitus_dct.items():
             self.get_data(name)
             self.refactor()
-            self.slice(value)
+            self.slice(value, name)
             self.calc(value)
             self.result(name)
             self.item_list = None
@@ -52,16 +53,16 @@ class CheckVitus:
             } for dct in self.item_list
         ]
 
-    def slice(self, value):
+    def slice(self, value, name):
         plat, last = (value * 0.75), 0
-        for i, dct in enumerate(self.item_list[3:], start=3):
+        for i, dct in enumerate(self.item_list):
             if i > 4:
                 if dct['platinum'] < plat:
-                    return
+                    break
                 elif dct['platinum'] != last:
-                    self.item_list = self.item_list[:i - 1]
-                    return
+                    break
             last = dct['platinum']
+        self.item_list = self.item_list[:i]
 
     def calc(self, value):
         below_cost, below_person = 0, 0
