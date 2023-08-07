@@ -4,10 +4,11 @@ import numpy as np
 
 class CheckVitus:
     def __init__(self):
-        self.all_items = []         # exchange: float:{name: str, list: list(dict), quantity: int}
-        self.quantity = None        # number of item with price below exchange rate
+        self.all_items = []         # exchange: float:{name: str, list: list(dict), below: int}
+        self.below_ex = None        # number of item with price below exchange rate
         self.vitus_dct = None       # {name: vitus cost}
         self.item_list = None       # one item full API response
+        self.p_below_ex = None      # people selling below exchange rate
         self.exchange_rate = None   # vitus/plat exchange
         print('processing...')
         self.process_data()
@@ -63,7 +64,7 @@ class CheckVitus:
             last = dct['platinum']
 
     def calc(self, value):
-        below = 0
+        below_cost, below_person = 0, 0
         platinum = np.array([dct.get('platinum') for dct in self.item_list if self.filter_dict(dct, 'mod_rank', 0)])
         quantity = np.array([dct.get('quantity') for dct in self.item_list if self.filter_dict(dct, 'mod_rank', 0)])
         try:
@@ -76,9 +77,11 @@ class CheckVitus:
         self.exchange_rate = average / value
         for price, number in zip(platinum, quantity):
             if price / value < self.exchange_rate:
-                below += number
+                below_cost += number
+                below_cost += 1
             else:
-                self.quantity = below
+                self.below_ex = below_cost
+                self.p_below_ex = below_cost
                 return
 
     def result(self, name):
@@ -87,7 +90,8 @@ class CheckVitus:
                 {
                     'name': name,
                     'list': self.item_list,
-                    'quantity': self.quantity
+                    'below_cost': self.below_ex,
+                    'p_below_cost': self.p_below_ex
                 }
             }
         )
@@ -95,13 +99,12 @@ class CheckVitus:
     def print_out(self):
         for dct in sorted(self.all_items, key=lambda y: list(y.keys())[0], reverse=True):
             key, info = dct.items().__iter__().__next__()
-            persons = len(info['list'])
             print(
                 f"{info['name']:25s}    "
-                f"{info['quantity']:5d} are sold by {persons:3d} person with {key:4.2f} plat/vitus"
+                f"{info['below_cost']:5d} are sold by {info['p_below_cost']:3d} person below {key:4.2f} plat/vitus"
             )
             for x in info['list']:
-                print(f"num: {x['quantity']:4d}     plat: {x['platinum']:3d}        "
+                print(f"num: {x['quantity']:<4d}     plat: {x['platinum']:3d}        "
                       f"mod rank: {x['mod_rank']:2d}         seller: {x['seller']}")
             print()
             print()
